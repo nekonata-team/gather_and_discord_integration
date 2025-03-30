@@ -11,44 +11,65 @@ const GATHER_SPACE_ID =
         throw new Error("GATHER_SPACE_ID is not set");
     })();
 const GATHER_MAP_ID = process.env.GATHER_MAP_ID ?? "office-main";
+const DISCORD_WEBHOOK_URL =
+    process.env.DISCORD_WEBHOOK_URL ??
+    (() => {
+        throw new Error("DISCORD_WEBHOOK_URL is not set");
+    })();
 
 console.log("GATHER_API_KEY", GATHER_API_KEY);
 console.log("GATHER_SPACE_ID", GATHER_SPACE_ID);
 console.log("GATHER_MAP_ID", GATHER_MAP_ID);
+console.log("DISCORD_WEBHOOK_URL", DISCORD_WEBHOOK_URL);
 
-// create the game object, giving it your spaceId and API key of your choice in this weird way
+// Discordへメッセージ送信用の関数
+async function sendDiscordMessage(content: string) {
+    try {
+        await fetch(DISCORD_WEBHOOK_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({content}),
+        });
+    } catch (error) {
+        console.error("Discordへの送信に失敗しました:", error);
+    }
+}
+
+// Gameオブジェクトの作成と接続
 const game = new Game(GATHER_SPACE_ID, () =>
     Promise.resolve({apiKey: GATHER_API_KEY}),
 );
-// this is the line that actually connects to the server and starts initializing stuff
 game.connect();
-// optional but helpful callback to track when the connection status changes
+
 game.subscribeToConnection((connected) => {
     console.log("connected?", connected);
 
     game.subscribeToEvent("playerJoins", async (data) => {
-        await game.waitForInit();
+        await game.waitForInit();  // Playerにデータが入るまで待つ
 
         const encId = data.playerJoins.encId;
-        const uid = game.getPlayerUidFromEncId(encId)!;
+        const uid = game.getPlayerUidFromEncId(encId);
+
+        if (!uid) {
+            console.error("uid is not found");
+            return;
+        }
+
         const player = game.getPlayer(uid);
         const playerCount = Object.keys(game.players).length;
 
-        console.log("Player joined");
-        console.log(`Player encId: ${encId}`);
-        console.log(`Player uid: ${uid}`);
-        // console.dir(player);
-        console.log(`Player name: ${player?.name}`);
-        console.log(`Now player count: ${playerCount}`);
+        const message = `Player joined: ${player?.name} (uid: ${uid}). Total players: ${playerCount}.`;
+        await sendDiscordMessage(message);
     });
-    game.subscribeToEvent("playerExits", (data) => {
+
+    game.subscribeToEvent("playerExits", async (data) => {
         const encId = data.playerExits.encId;
-        const uid = game.getPlayerUidFromEncId(encId)!;
+        const uid = game.getPlayerUidFromEncId(encId);
         const playerCount = Object.keys(game.players).length;
 
-        console.log("Player exited");
-        console.log(`Player encId: ${encId}`);
-        console.log(`Player uid: ${uid}`);
-        console.log(`Now player count: ${playerCount}`);
+        const message = `Player exited: uid ${uid}. Total players: ${playerCount}.`;
+        await sendDiscordMessage(message);
     });
 });
