@@ -45,31 +45,31 @@ game.connect();
 
 game.subscribeToConnection((connected) => {
     console.log("connected?", connected);
+});
 
-    game.subscribeToEvent("playerJoins", async (data) => {
-        await game.waitForInit();  // Playerにデータが入るまで待つ
+game.subscribeToEvent("playerJoins", async (data) => {
+    await game.waitForInit();  // Playerにデータが入るまで待つ
 
-        const encId = data.playerJoins.encId;
-        const uid = game.getPlayerUidFromEncId(encId);
+    const encId = data.playerJoins.encId;
+    const uid = game.getPlayerUidFromEncId(encId);
 
-        if (!uid) {
-            console.error("uid is not found");
-            return;
-        }
+    if (!uid) {
+        console.error("uid is not found");
+        return;
+    }
 
-        const player = game.getPlayer(uid);
-        const playerCount = Object.keys(game.players).length;
+    const player = game.getPlayer(uid);
+    const playerCount = Object.keys(game.players).length;
 
-        const message = `Player joined: ${player?.name} (uid: ${uid}). Total players: ${playerCount}.`;
-        await sendDiscordMessage(message);
-    });
+    const message = `Player joined: ${player?.name} (uid: ${uid}). Total players: ${playerCount}.`;
+    await sendDiscordMessage(message);
+});
 
-    game.subscribeToEvent("playerExits", async (data) => {
-        const encId = data.playerExits.encId;
-        const uid = game.getPlayerUidFromEncId(encId);
-        const playerCount = Object.keys(game.players).length;
+game.subscribeToEvent("playerExits", async (data) => {
+    const encId = data.playerExits.encId;
+    const uid = game.getPlayerUidFromEncId(encId);
+    const playerCount = Object.keys(game.players).length;
 
-        const message = `Player exited: uid ${uid}. Total players: ${playerCount}.`;
-        await sendDiscordMessage(message);
-    });
+    const message = `Player exited: uid ${uid}. Total players: ${playerCount}.`;
+    await sendDiscordMessage(message);
 });
