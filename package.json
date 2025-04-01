@@ -4,9 +4,9 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"start": "bun run src/index.ts",
+		"start": "NODE_ENV=production bun run src/index.ts",
 		"format": "bunx biome check --write ./src",
-		"dev": "bun --watch src/index.ts"
+		"dev": "NODE_ENV=development bun --watch src/index.ts"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
