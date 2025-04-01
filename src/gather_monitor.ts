@@ -25,6 +25,15 @@ export class GatherMonitor {
 	public async start(): Promise<void> {
 		this.game.connect();
 		this.setupEventListeners();
+		this.notifier.sendSystemNotification("オフィスの入退室監視を開始しました");
+	}
+
+	/**
+	 * Stops monitoring the Gather.Town space
+	 */
+	public async stop(): Promise<void> {
+		this.game.disconnect();
+		this.notifier.sendSystemNotification("オフィスの入退室監視を停止しました");
 	}
 
 	/**
