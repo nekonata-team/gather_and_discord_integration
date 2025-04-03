@@ -14,7 +14,7 @@ bun run src/index.ts
 
 This project was created using `bun init` in bun v1.2.7. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
 
-## Dcoker
+## Docker
 
 This project also includes a `docker-compose.yml` file for running the application in a Docker container.
 
