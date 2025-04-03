@@ -14,6 +14,16 @@ bun run src/index.ts
 
 This project was created using `bun init` in bun v1.2.7. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
 
+## Dcoker
+
+This project also includes a `docker-compose.yml` file for running the application in a Docker container.
+
+To run:
+
+```bash
+docker compose up -d
+```
+
 ## Setup
 
 Create a `.env` file in the root directory and add your Discord bot token:
