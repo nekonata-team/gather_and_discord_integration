@@ -24,8 +24,11 @@ export class GatherMonitor {
 	 */
 	public async start(): Promise<void> {
 		this.game.connect();
+		await this.game.waitForInit();
 		this.setupEventListeners();
-		this.notifier.sendSystemNotification("オフィスの入退室監視を開始しました");
+		await this.notifier.sendSystemNotification(
+			"オフィスの入退室監視を開始しました",
+		);
 	}
 
 	/**
@@ -33,7 +36,9 @@ export class GatherMonitor {
 	 */
 	public async stop(): Promise<void> {
 		this.game.disconnect();
-		this.notifier.sendSystemNotification("オフィスの入退室監視を停止しました");
+		await this.notifier.sendSystemNotification(
+			"オフィスの入退室監視を停止しました",
+		);
 	}
 
 	/**
@@ -46,9 +51,6 @@ export class GatherMonitor {
 			);
 		});
 		this.game.subscribeToEvent("playerJoins", async (data) => {
-			// playerの情報はwaitForInitを待たないと取得できない
-			await this.game.waitForInit();
-
 			const encId = data.playerJoins.encId;
 			const uid = this.game.getPlayerUidFromEncId(encId);
 
