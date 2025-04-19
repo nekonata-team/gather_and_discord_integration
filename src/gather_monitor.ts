@@ -24,7 +24,6 @@ export class GatherMonitor {
 	 */
 	public async start(): Promise<void> {
 		this.game.connect();
-		await this.game.waitForInit();
 		this.setupEventListeners();
 		await this.notifier.sendSystemNotification(
 			"オフィスの入退室監視を開始しました",
@@ -51,6 +50,8 @@ export class GatherMonitor {
 			);
 		});
 		this.game.subscribeToEvent("playerJoins", async (data) => {
+			await this.game.waitForInit();
+
 			const encId = data.playerJoins.encId;
 			const uid = this.game.getPlayerUidFromEncId(encId);
 
